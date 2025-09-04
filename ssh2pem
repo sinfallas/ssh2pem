@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Made by Sinfallas <sinfallas@yahoo.com>
+# Licence: GPL-2
+LC_ALL=C
+nom=$(basename "$0")
+
+function ayuda() {
+	echo "Ejemplo: $nom /home/user/.ssh/key /home/user/key.pem"
+	exit 1
+}
+
+if [[ -z "$1" ]]; then
+	ayuda
+fi
+
+if [[ -z "$2" ]]; then
+	ayuda
+fi
+
+ssh-keygen -p -f $1 -e -m pem > $2
+
+echo "Finalizado."
+exit 0
