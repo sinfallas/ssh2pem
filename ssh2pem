@@ -2,6 +2,8 @@
 # Made by Sinfallas <sinfallas@yahoo.com>
 # Licence: GPL-2
 LC_ALL=C
+quien=$(whoami)
+donde=$(hostname)
 nom=$(basename "$0")
 
 function ayuda() {
@@ -18,7 +20,11 @@ if [[ -z "$1" ]]; then
 	ayuda
 fi
 
-ssh-keygen -P "" -t rsa -b 4096 -f $1
+rm -f $1
+rm -f $1.pem
+rm -f $1.pub
+
+ssh-keygen -P "" -t rsa -b 4096 -C $quien@$donde -f $1
 mv -f $1 $1.pem
 clear
 
