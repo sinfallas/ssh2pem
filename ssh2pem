@@ -5,19 +5,43 @@ LC_ALL=C
 nom=$(basename "$0")
 
 function ayuda() {
-	echo "Ejemplo: $nom /home/user/.ssh/key /home/user/key.pem"
+	echo "Ejemplo: $nom /home/user/key"
 	exit 1
 }
+
+if [[ "$EUID" = "0" ]]; then
+	echo "ERROR: NO debe ser root."
+	exit 1
+fi
 
 if [[ -z "$1" ]]; then
 	ayuda
 fi
 
-if [[ -z "$2" ]]; then
-	ayuda
-fi
+ssh-keygen -P "" -t rsa -b 4096 -f $1
+mv -f $1 $1.pem
+clear
 
-ssh-keygen -p -f $1 -e -m pem > $2
+if [[ $XDG_SESSION_TYPE = x11 ]]; then
+	if [[ $(dpkg --get-selections | grep -w "xclip" | awk '{print $1}' | head -1) = xclip ]]; then
+		cat $1.pub | xclip -sel c
+		cat $1.pub
+		echo ""
+		echo "Llave publica copiada al portapapeles."
+	else
+		cat $1.pub
+	fi
+else
+	if [[ $(dpkg --get-selections | grep -w "wl-clipboard" | awk '{print $1}' | head -1) = wl-clipboard ]]; then
+		cat $1.pub
+		wl-copy -c
+		wl-copy $(cat $1.pub)
+		echo ""
+		echo "Llave publica copiada al portapapeles."
+	else
+		cat $1.pub
+	fi
+fi
 
 echo "Finalizado."
 exit 0
