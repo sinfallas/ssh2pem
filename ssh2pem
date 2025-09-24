@@ -16,6 +16,15 @@ if [[ "$EUID" = "0" ]]; then
 	exit 1
 fi
 
+if [[ $(dpkg --get-selections | grep -w "haveged" | awk '{print $1}' | head -1) = haveged ]]; then
+	echo "El paquete haveged esta instalado."
+else
+	echo "ERROR: El paquete haveged no esta instalado, se procede a instalar"
+	apt update -q
+	apt -y install haveged
+	apt clean
+fi
+
 if [[ -z "$1" ]]; then
 	ayuda
 fi
